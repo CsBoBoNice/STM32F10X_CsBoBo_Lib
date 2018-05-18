@@ -13,10 +13,40 @@
   *     @arg NVIC_PriorityGroup_4: 4 bits for pre-emption priority
   *                                0 bits for subpriority
 */
-//设置优先级分组：抢断优先级和相应优先级 (默认：4个抢断优先级，4个相应优先级)
-void NVIC_Configuration(void)
+/*
+			参数				取值范围
+	NVIC_PriorityGroup_0	抢占优先级(无)		子优先级(0——15)
+	NVIC_PriorityGroup_1	抢占优先级(0——1)	子优先级(0——7)
+	NVIC_PriorityGroup_2	抢占优先级(0——3)	子优先级(0——3)
+	NVIC_PriorityGroup_3	抢占优先级(0——7)	子优先级(0——1)
+	NVIC_PriorityGroup_4	抢占优先级(0——15)	子优先级(无)
+	
+*/
+void NVIC_Configuration(uint32_t NVIC_PriorityGroup)
 { 
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup);
+}
+
+//初始化中断线
+void NVIC_Init_IRQChannel(	uint8_t NVIC_IRQChannel,\
+							uint8_t NVIC_IRQChannelPreemptionPriority,\
+							uint8_t NVIC_IRQChannelSubPriority,\
+							FunctionalState NVIC_IRQChannelCmd\
+							)
+{
+  NVIC_InitTypeDef NVIC_InitStructure;
+  
+  /* 配置中断源*/
+  NVIC_InitStructure.NVIC_IRQChannel = NVIC_IRQChannel;
+  /* 配置抢占优先级*/
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = NVIC_IRQChannelPreemptionPriority;
+  /* 配置子优先级*/
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = NVIC_IRQChannelSubPriority;
+  /* 使能中断通道*/
+  NVIC_InitStructure.NVIC_IRQChannelCmd = NVIC_IRQChannelCmd;
+	
+  NVIC_Init(&NVIC_InitStructure);
+
 }
 
 /*

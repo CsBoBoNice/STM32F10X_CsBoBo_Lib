@@ -9,7 +9,7 @@
 #define USART_PERIOD_MS	1	//串口使用的定时器进入中断的时间单位MS
 
 //#define USING_USART1	//不适用可注释,节省RAM
-#define USING_USART2
+//#define USING_USART2
 //#define USING_USART3
 //#define USING_UART4
 //#define USING_UART5

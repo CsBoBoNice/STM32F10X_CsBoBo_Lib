@@ -7,12 +7,11 @@
 #define configTICK_RATE_HZ	(1000)	//时钟节拍频率，这里设置为1000，周期就是1ms
 #endif
 
-//定义进入滴答中断 SysTick_Handler 时间(ms)
-#define SYSTEMTICK_PERIOD_MS  1000*1/configTICK_RATE_HZ
+//定义进入滴答中断 SysTick_Handler 时间(us)
+#define SYSTEMTICK_PERIOD_MS  1000000*1/configTICK_RATE_HZ
 
-void SysTick_delay_init(void);
-void SysTick_delay_ms(u16 nms);
-void SysTick_delay_us(u32 nus);
+void SysTick_delay_init(uint32_t SysTick_IRQn_Tim);
+void SysTick_delay_cycle(u16 nTime);	//延时nTime个SysTick中断周期
 
 #endif
 

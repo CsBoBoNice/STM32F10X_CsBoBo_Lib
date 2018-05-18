@@ -1,82 +1,105 @@
 #include "CsBoBo_STM32F10X_systick.h"
 /**********使用方法***************************************************************/
-//
-//	SysTick_delay_init();	//初始化SysTick定时器中断 每1/configTICK_RATE_HZ秒中断一次
+/*
+	SysTick_delay_init(1000);	//初始化SysTick定时器中断 每 1000um 中断一次
 
-//	SysTick_delay_ms(u16 nms);		//毫秒延时	取值范围	nms<=1864
-//	SysTick_delay_us(u32 nus);		//微妙延时
+	当用freeROTS时用以下初始化SysTick
+	SysTick_delay_init(SYSTEMTICK_PERIOD_MS);	//初始化SysTick定时器中断 每1/configTICK_RATE_HZ秒中断一次
 
-//	SysTick_Handler(void)//SysTick定时器中断函数
+	SysTick_delay_cycle(6);	//延时 6 个SysTick中断周期
 
-//注意:SysTick延时与SysTick中断冲突，使用SysTick中断就不要使用SysTick延时与初始化SysTick延时
+	SysTick_Handler(void)//SysTick定时器中断函数在 stm32f10x_it.c 中
+	
+	在SysTick_Handler()函数中加入 TimingDelay_Decrement();
+	//extern void TimingDelay_Decrement(void);	
+	//void SysTick_Handler(void)
+	//{
+	//	TimingDelay_Decrement();
+	//}
+*/
+
 /*********************************************************************************/
 /*************************************************************************/
-static u8  fac_us=0;//us延时倍乘数
-static u16 fac_ms=0;//ms延时倍乘数
+static __IO u32 TimingDelay;	//在中断中递减的数	
 
-//初始化延迟函数
-//SYSTICK的时钟固定为AHB时钟，基础例程里面SYSTICK时钟频率为AHB/8
+//初始化SysTick
+//SYSTICK的时钟固定为AHB时钟
 //这里为了兼容FreeRTOS，所以将SYSTICK的时钟频率改为AHB的频率！
-//SYSCLK:系统时钟频率
-void SysTick_delay_init()
+
+// 配置中断优先级为 1<<4-1 = 15，优先级为最低
+// 配置systick 的时钟为 72M
+// 使能中断
+// 使能systick
+void SysTick_delay_init(uint32_t SysTick_IRQn_Tim)
 {
-	u32 reload;
-	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK);//选择外部时钟  HCLK
-	fac_us=SystemCoreClock/1000000;				//不论是否使用OS,fac_us都需要使用
-	reload=SystemCoreClock/1000000;				//每秒钟的计数次数 单位为M  
-	reload*=1000000/configTICK_RATE_HZ;			//根据configTICK_RATE_HZ设定溢出时间
-												//reload为24位寄存器,最大值:16777216,在72M下,约合0.233s左右	
-	fac_ms=1000/configTICK_RATE_HZ;				//代表OS可以延时的最少单位	   
-
-	SysTick->CTRL|=SysTick_CTRL_TICKINT_Msk;   	//开启SYSTICK中断
-	SysTick->LOAD=reload; 						//每1/configTICK_RATE_HZ秒中断一次	
-	SysTick->CTRL|=SysTick_CTRL_ENABLE_Msk;   	//开启SYSTICK  
-//  NVIC_SetPriority (SysTick_IRQn, 1); //设置中断优先级	
+	//在库函数SysTick_Config()中已经将SYSTICK的时钟频率改为AHB的频率
+	//	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK);//选择外部时钟  HCLK 将SYSTICK的时钟频率改为AHB的频率
+	if (SysTick_Config(SystemCoreClock / 1000000 * SysTick_IRQn_Tim))	// ST3.5.0库版本
+	{ 
+		/* Capture error */ 
+		while (1);
+	}	
 }	
+/*
+SysTick_Config(SystemCoreClock / 1000)		1ms中断一次
+SysTick_Config(SystemCoreClock / 100000)	10us中断一次
+SysTick_Config(SystemCoreClock / 1000000)	1us中断一次
+*/
+//// 这个 固件库函数 在 core_cm3.h中
+//static __INLINE uint32_t SysTick_Config(uint32_t ticks)
+//{ 
+//  // reload 寄存器为24bit，最大值为2^24
+//	if (ticks > SysTick_LOAD_RELOAD_Msk)  return (1);
+//  
+//  // 配置 reload 寄存器的初始值	
+//  SysTick->LOAD  = (ticks & SysTick_LOAD_RELOAD_Msk) - 1;
+//	
+//	// 配置中断优先级为 1<<4-1 = 15，优先级为最低
+//  NVIC_SetPriority (SysTick_IRQn, (1<<__NVIC_PRIO_BITS) - 1); 
+//	
+//	// 配置 counter 计数器的值
+//  SysTick->VAL   = 0;
+//	
+//	// 配置systick 的时钟为 72M
+//	// 使能中断
+//	// 使能systick
+//  SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk | 
+//                   SysTick_CTRL_TICKINT_Msk   | 
+//                   SysTick_CTRL_ENABLE_Msk;                    
+//  return (0); 
+//}
 
-//延时nms
-//注意nms的范围
-//SysTick->LOAD为24位寄存器,所以,最大延时为:
-//nms<=0xffffff*8*1000/SYSCLK
-//SYSCLK单位为Hz,nms单位为ms
-//对72M条件下,nms<=1864 
-void SysTick_delay_ms(u16 nms)
-{	 		  	  
-	u32 temp;		   
-	SysTick->LOAD=(u32)nms*fac_ms;//时间加载(SysTick->LOAD为24bit)
-	SysTick->VAL =0x00;           //清空计数器
-	SysTick->CTRL=0x01 ;          //开始倒数  
-	do
-	{
-		temp=SysTick->CTRL;
+//延时nTime个SysTick中断周期
+void SysTick_delay_cycle(u16 nTime)
+{
+	TimingDelay = nTime;	
+
+	// 使能滴答定时器  
+	SysTick->CTRL |=  SysTick_CTRL_ENABLE_Msk;
+
+	while(TimingDelay != 0);
+}
+
+/**
+  * @brief  获取节拍程序
+  * @attention  在 SysTick 中断函数 SysTick_Handler()调用
+  */
+void TimingDelay_Decrement(void)
+{
+	if (TimingDelay != 0x00)
+	{ 
+		TimingDelay--;
 	}
-	while(temp&0x01&&!(temp&(1<<16)));//等待时间到达   
-	SysTick->CTRL=0x00;       //关闭计数器
-	SysTick->VAL =0X00;       //清空计数器	  	    
-} 
-
-
-//延时nus
-//nus为要延时的us数.		    								   
-void SysTick_delay_us(u32 nus)
-{		
-	u32 temp;	    	 
-	SysTick->LOAD=nus*fac_us; //时间加载	  		 
-	SysTick->VAL=0x00;        //清空计数器
-	SysTick->CTRL=0x01 ;      //开始倒数 	 
-	do
-	{
-		temp=SysTick->CTRL;
-	}
-	while(temp&0x01&&!(temp&(1<<16)));//等待时间到达   
-	SysTick->CTRL=0x00;       //关闭计数器
-	SysTick->VAL =0X00;       //清空计数器	 
 }
 
 /*
   * log:
-  *	2018年4月15日
+  *	2018年5月18日
+	修改了SysTick初始化函数，使用官方库函数初始化
+	修改延时函数 去除旧的延时函数，新增加SysTick_delay_cycle()精确延时函数
+	Programmer:陈述
 
+  *	2018年4月15日
 	为了为了兼容FreeRTOS，所以将SYSTICK的时钟频率改为AHB的频率
 	将滴答延时函数与普通延时函数区别开
 	Programmer:陈述

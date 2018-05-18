@@ -55,7 +55,7 @@
 					GPIO_Mode_IN_FLOATING 	浮空输入		按键
 					GPIO_Mode_IPD 			下拉输入
 					GPIO_Mode_IPU 			上拉输入		输入捕获
-					GPIO_Mode_Out_OD 		开漏输出
+					GPIO_Mode_Out_OD 		开漏输出		I2C、 SMBUS 通讯
 					GPIO_Mode_Out_PP 		推挽输出		驱动小灯
 					GPIO_Mode_AF_OD 		复用开漏输出
 					GPIO_Mode_AF_PP 		复用推挽输出	PWM

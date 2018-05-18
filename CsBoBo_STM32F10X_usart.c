@@ -555,8 +555,10 @@ void UART_SendString(USART_TypeDef* USARTx,char* s)
 //在滴答中断 SysTick_Handler中执行的代码
 void USART_ReceiveOvertimeProcess(void)		//在滴答中断 SysTick_Handler中执行的代码
 {
+	#if defined (USING_USART1) || defined (USING_USART2) || defined (USING_USART3)|| defined (USING_UART4)|| defined (USING_UART5)
 	uint16_t i = 0;	
-
+	#endif
+	
 	#ifdef USING_USART1
 	if(USART1_ReceiveTimeCounter>=USART_PERIOD_MS)
 	{
