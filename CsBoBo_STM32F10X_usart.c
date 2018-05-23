@@ -2,6 +2,85 @@
 #include "CsBoBo_STM32F10X_LIB.h"
 /******Ê¹ÓÃ·½·¨****************************************************************************************************/
 /*
+@Àý:	
+		USART_init(	USART2,
+					GPIOD,GPIO_Pin_5,	
+					GPIOD,GPIO_Pin_6,
+					9600,					//²¨ÌØÂÊ
+					USART_WordLength_8b,	//8Î»×Ö³¤ ×Ö³¤(Êý¾ÝÎ»+Ð£ÑéÎ»)
+					USART_StopBits_1,		//Í£Ö¹Î» 1	Î»
+					USART_Parity_No,		//²»Ê¹ÓÃÐ£Ñé
+					USART_Mode_Rx | USART_Mode_Tx,	//½ÓÊÕºÍ·¢ËÍÄ£Ê½
+					USART_HardwareFlowControl_None,	//Ó²¼þÁ÷¿ØÖÆÊ§ÄÜ
+					0,0
+					);
+
+	²ÎÊý1£ºUSART±àºÅ
+						USART1
+						USART2
+						USART3
+						UART4
+						UART5
+
+	²ÎÊý2£ºTX GPIO 
+
+	²ÎÊý3£ºTX GPIO_Pin
+
+	²ÎÊý4£ºRX GPIO 
+
+	²ÎÊý5£ºRX GPIO_Pin 
+
+			´®¿ÚÒý½Å:	(Í¬Ò»¸ö´®¿ÚÒý½Å¿ÉËæÒâ´îÅä£¬ÀýÈç: TX(PA9) RX(PB7) )
+			´®¿Ú		TX		RX
+			USART1		PA9		PA10
+						PB6		PB7
+
+			USART2		PA2		PA3
+						PD5		PD6 
+
+			USART3		PB10	PB11
+						PC10	PC11
+						PD8		PD9
+						
+			UART4		PC10	PC11
+										
+			UART5		PC12	PD2
+			
+	²ÎÊý6£º²¨ÌØÂÊÈ¡Öµ·¶Î§(600,1200,2400,4800,9600,14400,19200,28800,38400,57600,115200,230400,460800)
+	
+	²ÎÊý7£º×Ö³¤(Êý¾ÝÎ»+Ð£ÑéÎ»)
+			USART_WordLength_8b		8Î»×Ö³¤
+			USART_WordLength_9b		9Î»×Ö³¤
+
+	²ÎÊý8£ºÍ£Ö¹Î»
+			USART_StopBits_1		Í£Ö¹Î» 1	Î»
+			USART_StopBits_0_5		Í£Ö¹Î» 0.5	Î»
+			USART_StopBits_2		Í£Ö¹Î» 2	Î»
+			USART_StopBits_1_5		Í£Ö¹Î» 1.5	Î»
+
+	²ÎÊý9£ºÐ£ÑéÎ»Ñ¡Ôñ
+			USART_Parity_No			²»Ê¹ÓÃÐ£Ñé
+			USART_Parity_Even		Å¼Ð£Ñé
+			USART_Parity_Odd		ÆæÐ£Ñé
+
+	²ÎÊý10£ºUSARTÄ£Ê½¿ØÖÆ£º
+			USART_Mode_Tx		·¢ËÍÄ£Ê½
+			USART_Mode_Rx		½ÓÊÕÄ£Ê½
+			USART_Mode_Rx | USART_Mode_Tx	½ÓÊÕºÍ·¢ËÍÄ£Ê½
+	
+	²ÎÊý11£ºÓ²¼þÁ÷¿ØÖÆ£º
+			USART_HardwareFlowControl_None		Ó²¼þÁ÷¿ØÖÆÊ§ÄÜ
+			USART_HardwareFlowControl_RTS		·¢ËÍÇëÇóRTSÊ¹ÄÜ
+			USART_HardwareFlowControl_CTS		Çå³ý·¢ËÍCTSÊ¹ÄÜ
+			USART_HardwareFlowControl_RTS_CTS	RTSºÍCTSÊ¹ÄÜ
+
+	²ÎÊý12£º¶ÔÓ¦ÇÀ¶ÏÓÅÏÈ¼¶¼¶±ð	ÊýÖµÔ½µÍÓÅÏÈ¼¶Ô½¸ß
+
+	²ÎÊý13£º¶ÔÓ¦ÏìÓ¦ÓÅÏÈ¼¶¼¶±ð	ÊýÖµÔ½µÍÓÅÏÈ¼¶Ô½¸ß
+*/
+/******************************************************************************************************************/
+
+/*
 
 @Àý:	USART_SendByte(USART1,c);	//·¢ËÍÒ»¸ö×Ö·û´®
 		²ÎÊý1£ºUSART_TypeDef* ÐÍ
@@ -22,39 +101,6 @@
 					UART5
 		²ÎÊý2£ºunsigned char ÐÍÖ¸Õë
 		²ÎÊý3£ºÊý¾Ý¸öÊý
-
-@Àý:	USART_init(1,115200,0,3,0);	//´®¿Ú³õÊ¼»¯
-
-	²ÎÊý1£ºUSART±àºÅ£¨·¶Î§£º1,2,3,4,5£©
-								1	USART1
-								2	USART2
-								3	USART3
-								4	UART4
-								5	UART5
-										
-	²ÎÊý2£º²¨ÌØÂÊÈ¡Öµ·¶Î§(600,1200,2400,4800,9600,14400,19200,28800,38400,57600,115200,230400,460800)
-	
-	²ÎÊý3£º¶ÔÓ¦ÇÀ¶ÏÓÅÏÈ¼¶¼¶±ð	ÊýÖµÔ½µÍÓÅÏÈ¼¶Ô½¸ß
-
-	²ÎÊý4£º¶ÔÓ¦ÏìÓ¦ÓÅÏÈ¼¶¼¶±ð	ÊýÖµÔ½µÍÓÅÏÈ¼¶Ô½¸ß
-	
-	²ÎÊý5£ºÒý½ÅÖØÓ³Éä	(·¶Î§ ²Î¿¼ÏÂ±í)
-´®¿ÚÒý½Å:
-´®¿Ú		Òý½ÅÖØÓ³Ïñ		TX		RX
-USART1		0 Ã»ÖØÓ³Ïñ		PA9		PA10
-			1 ÍêÈ«ÖØÓ³Ïñ	PB6		PB7
-
-USART2		0 Ã»ÖØÓ³Ïñ		PA2		PA3
-			1 ÍêÈ«´ÓÓ³Ïñ	PD5		PD6 
-
-USART3		0 Ã»ÖØÓ³Ïñ		PB10	PB11
-			1 ²¿·ÖÖØÓ³Ïñ1	PC10	PC11
-			2 ²¿·ÖÖØÓ³Ïñ2	PD8		PD9
-			
-UART4		0 Ã»ÖØÓ³Ïñ		PC10	PC11
-
-UART5		0 Ã»ÖØÓ³Ïñ		PC12	PD2
-
 ************************************************************************
 @×¢:
 
@@ -70,9 +116,19 @@ USART_ReceiveOvertimeProcess();
 
 ÒÔÏÂÊÇÊ¹ÓÃ´ø³¬Ê±µÄ´®¿Ú½ÓÊÕ´úÂë
 
-NVIC_Configuration();//ÉèÖÃÓÅÏÈ¼¶·Ö×é£ºÇÀ¶ÏÓÅÏÈ¼¶ºÍÏàÓ¦ÓÅÏÈ¼¶
+NVIC_Configuration(NVIC_PriorityGroup_4);//ÉèÖÃÓÅÏÈ¼¶·Ö×é£ºÇÀ¶ÏÓÅÏÈ¼¶ºÍÏàÓ¦ÓÅÏÈ¼¶
 TIM_Common_Init(2,7200,10,TIM_CounterMode_Up,3,0);	//¶¨Ê±Æ÷³õÊ¼»¯ 1MS
-USART_init(1,115200,0,3,0);	//´®¿Ú³õÊ¼»¯
+USART_init(	USART2,
+			GPIOD,GPIO_Pin_5,	
+			GPIOD,GPIO_Pin_6,
+			9600,					//²¨ÌØÂÊ
+			USART_WordLength_8b,	//8Î»×Ö³¤ ×Ö³¤(Êý¾ÝÎ»+Ð£ÑéÎ»)
+			USART_StopBits_1,		//Í£Ö¹Î» 1	Î»
+			USART_Parity_No,		//²»Ê¹ÓÃÐ£Ñé
+			USART_Mode_Rx | USART_Mode_Tx,	//½ÓÊÕºÍ·¢ËÍÄ£Ê½
+			USART_HardwareFlowControl_None,	//Ó²¼þÁ÷¿ØÖÆÊ§ÄÜ
+			0,0
+			);	//´®¿Ú³õÊ¼»¯
 
 if(Get_USART_ready_buf_ok(USART1))	//ÅÐ¶Ï³¬Ê±£¬Ò»Ö¡Êý¾Ý½ÓÊÕ³É¹¦
 {
@@ -85,49 +141,6 @@ if(Get_USART_ready_buf_ok(USART1))	//ÅÐ¶Ï³¬Ê±£¬Ò»Ö¡Êý¾Ý½ÓÊÕ³É¹¦
 
 USART1_ready_buf ½ÓÊÕµ½µÄÊý¾Ý
 USART1_ready_buf_len ½ÓÊÕÊý¾Ý³¤¶È
-
-ÖÐ¶Ï´¦Àíº¯Êý¾¡Á¿Ð´ÔÚ stm32f10x_it.cÎÄ¼þÖÐ:
-ÒÔÏÂÊÇÊ¹ÓÃ³¬Ê±´¦ÀíµÄÖÐ¶Ï´¦Àíº¯Êý:
-#if STM32F10X_LD||STM32F10X_LD_VL||STM32F10X_MD||STM32F10X_MD_VL||STM32F10X_HD||STM32F10X_HD_VL||STM32F10X_XL||STM32F10X_CL		
-void USART1_IRQHandler(void)
-{
-	#ifdef USING_USART1
-	USART1_ISR();
-	#endif
-}
-
-void USART2_IRQHandler(void)
-{
-	#ifdef USING_USART2
-	USART2_ISR();
-	#endif
-}
-#endif
-
-#if STM32F10X_MD||STM32F10X_MD_VL||STM32F10X_HD||STM32F10X_HD_VL||STM32F10X_XL||STM32F10X_CL					
-void USART3_IRQHandler(void)
-{
-	#ifdef USING_USART3
-	USART3_ISR();
-	#endif
-}
-#endif
-
-#if STM32F10X_HD||STM32F10X_HD_VL||STM32F10X_XL||STM32F10X_CL
-void UART4_IRQHandler(void)
-{
-	#ifdef USING_UART4
-	UART4_ISR();
-	#endif
-}
-
-void UART5_IRQHandler(void)
-{
-	#ifdef USING_UART5
-	UART5_ISR();
-	#endif
-}
-#endif
 
 */
 /******************************************************************************************************************/
@@ -167,15 +180,21 @@ __IO uint16_t UART4_ready_buf_len=0;
 #endif
 
 #ifdef USING_UART5
-uint8_t UART5_receive_buf[USART1_BUF_SIZE],UART5_ready_buf[UART5_BUF_SIZE];
+uint8_t UART5_receive_buf[UART5_BUF_SIZE],UART5_ready_buf[UART5_BUF_SIZE];
 static int32_t UART5_ReceiveTimeCounter = 0;
 __IO uint16_t UART5_receive_index=0; 
 __IO uint8_t UART5_ready_buf_ok = 0;
 __IO uint16_t UART5_ready_buf_len=0;
 #endif
 
+void USART1_ISR(void); //´®¿ÚÖÐ¶Ïº¯Êý
+void USART2_ISR(void); //´®¿ÚÖÐ¶Ïº¯Êý
+void USART3_ISR(void); //´®¿ÚÖÐ¶Ïº¯Êý
+void UART4_ISR(void); //´®¿ÚÖÐ¶Ïº¯Êý
+void UART5_ISR(void); //´®¿ÚÖÐ¶Ïº¯Êý
+
 /**********************ÖÐ¶Ïº¯Êý***************************************************************************************************/
-#if STM32F10X_LD||STM32F10X_LD_VL||STM32F10X_MD||STM32F10X_MD_VL||STM32F10X_HD||STM32F10X_HD_VL||STM32F10X_XL||STM32F10X_CL		
+#if defined(STM32F10X_LD)||defined(STM32F10X_LD_VL)||defined(STM32F10X_MD)||defined(STM32F10X_MD_VL)||defined(STM32F10X_HD)||defined(STM32F10X_HD_VL)||defined(STM32F10X_XL)||defined(STM32F10X_CL)		
 void USART1_IRQHandler(void)
 {
 	#ifdef USING_USART1
@@ -191,7 +210,7 @@ void USART2_IRQHandler(void)
 }
 #endif
 
-#if STM32F10X_MD||STM32F10X_MD_VL||STM32F10X_HD||STM32F10X_HD_VL||STM32F10X_XL||STM32F10X_CL					
+#if defined(STM32F10X_MD)||defined(STM32F10X_MD_VL)||defined(STM32F10X_HD)||defined(STM32F10X_HD_VL)||defined(STM32F10X_XL)||defined(STM32F10X_CL)					
 void USART3_IRQHandler(void)
 {
 	#ifdef USING_USART3
@@ -200,7 +219,7 @@ void USART3_IRQHandler(void)
 }
 #endif
 
-#if STM32F10X_HD||STM32F10X_HD_VL||STM32F10X_XL||STM32F10X_CL
+#if defined(STM32F10X_HD)||defined(STM32F10X_HD_VL)||defined(STM32F10X_XL)||defined(STM32F10X_CL)
 void UART4_IRQHandler(void)
 {
 	#ifdef USING_UART4
@@ -215,345 +234,8 @@ void UART5_IRQHandler(void)
 	#endif
 }
 #endif
-/**********************´®¿Ú1ÖÐ¶Ï½ÓÊÕÒ»¸ö×Ö·û***************************************************************************************************/
-/*
-ÔÚÖÐ¶Ï·þÎñ³ÌÐòÖÐ£¬ÓÉÓÚÖ÷»úÏìÓ¦ÖÐ¶ÏÊ±²¢²»ÖªµÀÊÇÄÄ¸öÖÐ¶ÏÔ´·¢³öÖÐ¶ÏÇëÇó£¬
-Òò´Ë±ØÐëÔÚÖÐ¶Ï·þÎñ³ÌÐòÖÐ¶ÔÖÐ¶ÏÔ´½øÐÐÅÐ±ð£¬È»ºó·Ö±ð½øÐÐ´¦Àí¡£
-µ±È»£¬Èç¹ûÖ»Éæ¼°µ½Ò»¸öÖÐ¶ÏÇëÇó£¬ÊÇ²»ÓÃ×öÉÏÊöÅÐ±ðµÄ¡£µ«ÊÇÎÞÂÛÊ²Ã´Çé¿ö£¬×öÉÏÊöÅÐ±ðÊÇ¸öºÃÏ°¹ß
-*/
-#ifdef USING_USART1
-void USART1_ISR(void)   
-{
-
-	if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)//ÅÐ¶ÏÊÇ·ñÊÇÖÐ¶Ï
-	{
-		USART1_ReceiveTimeCounter = USART1_RECEIVE_OVERTIME;
-
-		if(USART1_receive_index >= USART1_BUF_SIZE)//Èô½ÓÊÕÎ»ÖÃÔ½½ç£¬ÄÇÃ´ÖØÍ·¿ªÊ¼´æ·Å
-			USART1_receive_index = 0;
-		
-		USART1_receive_buf[USART1_receive_index++] = (uint8_t)USART_ReceiveData(USART1);//½ÓÊÕ×Ö·û£¬²¢Î»ÖÃ¼Ó1		
-	}	
-	if (USART_GetFlagStatus(USART1, USART_FLAG_ORE) != RESET)//¹ýÔØ´¦Àí£¬Ö»Òª¶Á×´Ì¬¼Ä´æÆ÷ºÍÊý¾Ý¼Ä´æÆ÷¾Í¿É×Ô¶¯ÇåÀí´Ë±êÖ¾
-	{
-		(void)USART_ReceiveData(USART1);
-	}
-
-} 
-#endif
-
-#ifdef USING_USART2
-void USART2_ISR(void)
-{
-	if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)  //ÅÐ¶ÏÊÇ·ñÊÇÖÐ¶Ï
-	{	
-		USART2_ReceiveTimeCounter = USART2_RECEIVE_OVERTIME;
-		
-		if(USART2_receive_index >= USART2_BUF_SIZE)	//Èô½ÓÊÕÎ»ÖÃÔ½½ç£¬ÄÇÃ´ÖØÍ·¿ªÊ¼´æ·Å
-			USART2_receive_index = 0;
-		
-		USART2_receive_buf[USART2_receive_index++] = (uint8_t)USART_ReceiveData(USART2);//½ÓÊÕ×Ö·û£¬²¢Î»ÖÃ¼Ó1
-		
-	}		
-	if (USART_GetFlagStatus(USART2, USART_FLAG_ORE) != RESET)//¹ýÔØ´¦Àí£¬Ö»Òª¶Á×´Ì¬¼Ä´æÆ÷ºÍÊý¾Ý¼Ä´æÆ÷¾Í¿É×Ô¶¯ÇåÀí´Ë±êÖ¾
-	{
-		(void)USART_ReceiveData(USART2);
-	}
-}
-#endif
-
-#ifdef USING_USART3
-void USART3_ISR(void)
-{
-	if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
-	{
-		USART3_ReceiveTimeCounter = USART3_RECEIVE_OVERTIME;
-		if(USART3_receive_index >= USART3_BUF_SIZE)
-			USART3_receive_index = 0;
-		
-		USART3_receive_buf[USART3_receive_index++] = (uint8_t)USART_ReceiveData(USART3);
-		
-	}
-		
-	if (USART_GetFlagStatus(USART3, USART_FLAG_ORE) != RESET)
-	{
-		(void)USART_ReceiveData(USART3);
-	}
-}
-#endif
-
-#ifdef USING_UART4
-void USART4_ISR(void)
-{
-	if (USART_GetITStatus(UART4, USART_IT_RXNE) != RESET)
-	{
-		UART4_ReceiveTimeCounter = UART4_RECEIVE_OVERTIME;
-		if(UART4_receive_index >= UART4_BUF_SIZE)
-			UART4_receive_index = 0;
-		
-		UART4_receive_buf[UART4_receive_index++] = (uint8_t)USART_ReceiveData(UART4);
-		
-	}
-		
-	if (USART_GetFlagStatus(UART4, USART_FLAG_ORE) != RESET)
-	{
-		(void)USART_ReceiveData(UART4);
-	}
-}
-#endif
-
-#ifdef USING_UART5
-void USART5_ISR(void)
-{
-	if (USART_GetITStatus(UART5, USART_IT_RXNE) != RESET)
-	{		
-		UART5_ReceiveTimeCounter = UART5_RECEIVE_OVERTIME;
-		if(UART5_receive_index >= UART5_BUF_SIZE)
-			UART5_receive_index = 0;
-		
-		UART5_receive_buf[UART5_receive_index++] = (uint8_t)USART_ReceiveData(UART5);
-		
-	}
-		
-	if (USART_GetFlagStatus(UART5, USART_FLAG_ORE) != RESET)
-	{
-		(void)USART_ReceiveData(UART5);
-	}
-}
-#endif
-
-/****************************************************************************************************************************************/
-
-void USART_init(u8 USARTx,u32 BaudRate,uint8_t PreemptionPriority,uint8_t SubPriority,u8 remap_usart)
-{
-	u16 GPIO_Pin_Tx;
-	u16 GPIO_Pin_Rx;
-	u8  USART_IRQChannelx;
-	USART_TypeDef* USARTy;
-	GPIO_TypeDef*  GPIOy;
-	GPIO_InitTypeDef GPIO_InitStructure;
-	USART_InitTypeDef USART_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
-	
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-
-	if(remap_usart==0)
-	{
-		switch(USARTx)
-		{
-
-				#if STM32F10X_LD||STM32F10X_LD_VL||STM32F10X_MD||STM32F10X_MD_VL||STM32F10X_HD||STM32F10X_HD_VL||STM32F10X_XL||STM32F10X_CL		
-				case 1:
-							USARTy=USART1;
-							GPIOy=GPIOA;
-							USART_IRQChannelx=USART1_IRQn;
-							GPIO_Pin_Tx=GPIO_Pin_9;
-							GPIO_Pin_Rx=GPIO_Pin_10;
-							USART_printf=USART1;
-							RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1|RCC_APB2Periph_GPIOA, ENABLE);break;
-				case 2:
-							USARTy=USART2;
-							GPIOy=GPIOA;
-							USART_IRQChannelx=USART2_IRQn;
-							GPIO_Pin_Tx=GPIO_Pin_2;
-							GPIO_Pin_Rx=GPIO_Pin_3;
-							USART_printf=USART2;
-							RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-							RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);break;
-				#endif
-				
-				#if STM32F10X_MD||STM32F10X_MD_VL||STM32F10X_HD||STM32F10X_HD_VL||STM32F10X_XL||STM32F10X_CL					
-				case 3:
-							USARTy=USART3;
-							GPIOy=GPIOB;
-							USART_IRQChannelx=USART3_IRQn;
-							GPIO_Pin_Tx=GPIO_Pin_10;
-							GPIO_Pin_Rx=GPIO_Pin_11;
-							USART_printf=USART3;
-							RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-							RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);break;
-				#endif
-
-				#if STM32F10X_HD||STM32F10X_HD_VL||STM32F10X_XL||STM32F10X_CL									
-				case 4:
-							USARTy=UART4;
-							GPIOy=GPIOC;
-							USART_IRQChannelx=UART4_IRQn;
-							GPIO_Pin_Tx=GPIO_Pin_10;
-							GPIO_Pin_Rx=GPIO_Pin_11;
-							USART_printf=UART4;
-							RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
-							RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);break;			
-				case 5:
-							USARTy=UART5;
-							USART_IRQChannelx=UART5_IRQn;
-							GPIO_Pin_Tx=GPIO_Pin_12;
-							GPIO_Pin_Rx=GPIO_Pin_2;
-							USART_printf=UART5;
-							RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC|RCC_APB2Periph_GPIOD, ENABLE);
-							RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART5,ENABLE);break;
-				#endif
-		}
-
-		if(USARTx!=5)
-		{
-				GPIO_InitStructure.GPIO_Pin = GPIO_Pin_Tx;
-				GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-				GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-				GPIO_Init(GPIOy, &GPIO_InitStructure);    
-
-				GPIO_InitStructure.GPIO_Pin = GPIO_Pin_Rx;
-				GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-				GPIO_Init(GPIOy, &GPIO_InitStructure);
-		}
-		#if STM32F10X_HD||STM32F10X_HD_VL||STM32F10X_XL||STM32F10X_CL
-		else
-		{
-				/* Configure USART5 Tx (PC.12) as alternate function push-pull */
-				GPIO_InitStructure.GPIO_Pin = GPIO_Pin_Tx;
-				GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-				GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-				GPIO_Init(GPIOC, &GPIO_InitStructure);    
-				/* Configure USART5 Rx (PD.2) as input floating */
-				GPIO_InitStructure.GPIO_Pin = GPIO_Pin_Rx;
-				GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-				GPIO_Init(GPIOD, &GPIO_InitStructure);
-		}
-		#endif
-	}
-
-	if(remap_usart==1)
-	{
-		switch(USARTx)
-		{
-				#if STM32F10X_LD||STM32F10X_LD_VL||STM32F10X_MD||STM32F10X_MD_VL||STM32F10X_HD||STM32F10X_HD_VL||STM32F10X_XL||STM32F10X_CL		
-				case 1:
-							GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);//USART1 ¸´ÓÃ¹¦ÄÜÓ³Éä
-							USARTy=USART1;
-							GPIOy=GPIOB;
-							USART_IRQChannelx=USART1_IRQn;
-							GPIO_Pin_Tx=GPIO_Pin_6;
-							GPIO_Pin_Rx=GPIO_Pin_7;
-							USART_printf=USART1;
-							RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1|RCC_APB2Periph_GPIOB, ENABLE);break;
-				case 2:
-							GPIO_PinRemapConfig(GPIO_Remap_USART2, ENABLE);//USART2 ¸´ÓÃ¹¦ÄÜÓ³Éä				
-							USARTy=USART2;
-							GPIOy=GPIOD;
-							USART_IRQChannelx=USART2_IRQn;
-							GPIO_Pin_Tx=GPIO_Pin_5;
-							GPIO_Pin_Rx=GPIO_Pin_6;
-							USART_printf=USART2;
-							RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
-							RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);break;
-				#endif
-				
-				#if STM32F10X_MD||STM32F10X_MD_VL||STM32F10X_HD||STM32F10X_HD_VL||STM32F10X_XL||STM32F10X_CL					
-				case 3:
-							GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);	//USART3 ¸´ÓÃ¹¦ÄÜ²¿·ÖÓ³Éä
-							USARTy=USART3;
-							GPIOy=GPIOC;
-							USART_IRQChannelx=USART3_IRQn;
-							GPIO_Pin_Tx=GPIO_Pin_10;
-							GPIO_Pin_Rx=GPIO_Pin_11;
-							USART_printf=USART3;
-							RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
-							RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);break;
-				#endif
-		}
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_Tx;
-			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-			GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-			GPIO_Init(GPIOy, &GPIO_InitStructure);    
-
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_Rx;
-			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-			GPIO_Init(GPIOy, &GPIO_InitStructure);
-	}		
-	#if STM32F10X_MD||STM32F10X_MD_VL||STM32F10X_HD||STM32F10X_HD_VL||STM32F10X_XL||STM32F10X_CL					
-	if(remap_usart==2)
-	{
-		GPIO_PinRemapConfig(GPIO_FullRemap_USART3, ENABLE);//USART3 ¸´ÓÃ¹¦ÄÜ²¿·ÖÓ³Éä
-		USARTy=USART3;
-		GPIOy=GPIOD;
-		USART_IRQChannelx=USART3_IRQn;
-		GPIO_Pin_Tx=GPIO_Pin_8;
-		GPIO_Pin_Rx=GPIO_Pin_9;
-		USART_printf=USART3;
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
-
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_Tx;
-		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-		GPIO_Init(GPIOy, &GPIO_InitStructure);    
-
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_Rx;
-		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-		GPIO_Init(GPIOy, &GPIO_InitStructure);
-	}	
-	#endif	
-	USART_InitStructure.USART_BaudRate = BaudRate;		//´®¿ÚµÄ²¨ÌØÂÊ
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;		//Êý¾Ý×Ö³¤¶È(8Î»»ò9Î»)
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;			//¿ÉÅäÖÃµÄÍ£Ö¹Î»-Ö§³Ö1»ò2¸öÍ£Ö¹Î»
-	USART_InitStructure.USART_Parity = USART_Parity_No ;			//ÎÞÆæÅ¼Ð£Ñé
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//ÎÞÓ²¼þÁ÷¿ØÖÆ
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	//Ë«¹¤Ä£Ê½£¬Ê¹ÄÜ·¢ËÍºÍ½ÓÊÕ
-	USART_Init(USARTy, &USART_InitStructure);		/* ¸ù¾Ý´«ÈëµÄ²ÎÊý³õÊ¼»¯STM32µÄUSARTÅäÖÃ */
-	 
-	/* ÈçÏÂÓï¾ä½â¾öµÚ1¸ö×Ö½ÚÎÞ·¨ÕýÈ··¢ËÍ³öÈ¥µÄÎÊÌâ */
-	USART_ClearFlag(USARTy, USART_FLAG_TC);     // Çå±êÖ¾ 
-	USART_ITConfig(USARTy,USART_IT_RXNE,ENABLE); //¿ªÆô½ÓÊÜÖÐ¶Ï£¬±ØÐëÒªÔÚ¿ªÆô´®¿ÚÇ°
-	
-	USART_Cmd(USARTy, ENABLE);/* Ê¹ÄÜSTM32µÄUSART¹¦ÄÜÄ£¿é */
-
-//	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);	//4¸öÇÀ¶ÏÓÅÏÈ¼¶£¬4¸öÏàÓ¦ÓÅÏÈ¼¶
-	
-	NVIC_InitStructure.NVIC_IRQChannel = USART_IRQChannelx;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=PreemptionPriority ;//ÇÀÕ¼ÓÅÏÈ¼¶
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = SubPriority;		//×ÓÓÅÏÈ¼¶
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQÍ¨µÀÊ¹ÄÜ
-	NVIC_Init(&NVIC_InitStructure);	//¸ù¾ÝÖ¸¶¨µÄ²ÎÊý³õÊ¼»¯VIC¼Ä´æÆ÷  
-	USART_ITConfig(USARTy, USART_IT_RXNE, ENABLE);//¿ªÆôÖÐ¶Ï
-}
-
-
-void Change_printf(USART_TypeDef* USART_prt)//ÖØ¶¨Ïò´®¿ÚÑ¡Ôñ
-{
-	USART_printf=USART_prt;
-}
-
-//·¢ËÍÒ»¸ö×Ö½Ú
-void USART_SendByte(USART_TypeDef* USARTx,uint8_t SendByte)	//·¢ËÍÒ»¸ö×Ö½Ú
-{
-
-    	USARTx->DR = (SendByte & (uint16_t)0x01FF);
-  		/* Loop until the end of transmission */
-		while (USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET);
-}
-//·¢ËÍÒ»´®Êý¾Ý
-void USART_SendChars(USART_TypeDef* USARTx,const uint8_t* SendChars,uint16_t len)	//·¢ËÍÒ»´®Êý¾Ý
-{
-	uint16_t i = 0;
-	for(i = 0; i < len; i++)
-	{
-    	USARTx->DR = (*(SendChars + i) & (uint16_t)0x01FF);
-		while (USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET);
-	}
-}
-
-//USART·¢ËÍ×Ö·û´®
-void UART_SendString(USART_TypeDef* USARTx,char* s)
-{
-	while(*s)//¼ì²â×Ö·û´®½áÊø·û
-	{
-		while(USART_GetFlagStatus(USARTx, USART_FLAG_TC)==RESET); 
-		USART_SendData(USARTx ,*s++);//·¢ËÍµ±Ç°×Ö·û
-	}
-}
-
-//ÔÚµÎ´ðÖÐ¶Ï SysTick_HandlerÖÐÖ´ÐÐµÄ´úÂë
-void USART_ReceiveOvertimeProcess(void)		//ÔÚµÎ´ðÖÐ¶Ï SysTick_HandlerÖÐÖ´ÐÐµÄ´úÂë
+/**********************ÔÚÖÐ¶ÏÖÐÖ´ÐÐµÄ´úÂë***************************************************************************************************/
+void USART_ReceiveOvertimeProcess(void)	//ÔÚÖÐ¶ÏÖÐÖ´ÐÐµÄ´úÂë
 {
 	#if defined (USING_USART1) || defined (USING_USART2) || defined (USING_USART3)|| defined (USING_UART4)|| defined (USING_UART5)
 	uint16_t i = 0;	
@@ -654,63 +336,110 @@ void USART_ReceiveOvertimeProcess(void)		//ÔÚµÎ´ðÖÐ¶Ï SysTick_HandlerÖÐÖ´ÐÐµÄ´úÂ
 	}
 	#endif
 }
-
-/******************************************************************************************************************/
-/*
-    ¼ÓÈëÒÔÏÂ´úÂë,Ö§³Öprintfº¯Êý,²»ÐèÒªÑ¡Ôñuse MicroLIB	  
-*/
-#ifndef MicroLIB
-//#pragma import(__use_no_semihosting)             //Ã»ÓÐÊµÏÖfgetcÊ±ÐèÒªÉùÃ÷¸Ã²ÎÊý   
-/* ±ê×¼¿âÐèÒªµÄÖ§³Öº¯Êý Ê¹ÓÃprintf()µ÷ÊÔ´òÓ¡²»ÐèÒªÊµÏÖ¸Ãº¯Êý */               
-struct __FILE 
-{ 
-	int handle; 
-    /* Whatever you require here. If the only file you are using is */    
-    /* standard output using printf() for debugging, no file handling */    
-    /* is required. */
-}; 
-
-FILE __stdout;       
-//¶¨Òå_sys_exit()ÒÔ±ÜÃâÊ¹ÓÃ°ëÖ÷»úÄ£Ê½    
-_sys_exit(int x) 
-{ 
-	x = x; 
-} 
-/* ÖØ¶¨Òåfputcº¯Êý Èç¹ûÊ¹ÓÃMicroLIBÖ»ÐèÒªÖØ¶¨Òåfputcº¯Êý¼´¿É */  
-int fputc(int ch, FILE *f)
+/*************************************************************************************************************************/
+/**********************´®¿Ú1ÖÐ¶Ï½ÓÊÕÒ»¸ö×Ö·û***************************************************************************************************/
+#ifdef USING_USART1
+void USART1_ISR(void)   
 {
-		while (USART_GetFlagStatus(USART_printf, USART_FLAG_TC) == RESET);		
-		/* ·¢ËÍÒ»¸ö×Ö½ÚÊý¾Ýµ½USART1 */
-		USART_SendData(USART_printf, (u8) ch);
+
+	if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)//ÅÐ¶ÏÊÇ·ñÊÇÖÐ¶Ï
+	{
+		USART1_ReceiveTimeCounter = USART1_RECEIVE_OVERTIME;
+
+		if(USART1_receive_index >= USART1_BUF_SIZE)//Èô½ÓÊÕÎ»ÖÃÔ½½ç£¬ÄÇÃ´ÖØÍ·¿ªÊ¼´æ·Å
+			USART1_receive_index = 0;
 		
-		/* µÈ´ý·¢ËÍÍê±Ï */
-		while (USART_GetFlagStatus(USART_printf, USART_FLAG_TC) == RESET);		
-	
-		return (ch);
-}
-/*
-¿ÉÒÔÖ±½ÓÊ¹ÓÃputchar
-²»ÐèÒªÔÙ¶¨Òå int putchar(int ch)£¬ÒòÎªstdio.hÖÐÓÐÈçÏÂ¶¨Òå
- #define putchar(c) putc(c, stdout)
-*/
+		USART1_receive_buf[USART1_receive_index++] = (uint8_t)USART_ReceiveData(USART1);//½ÓÊÕ×Ö·û£¬²¢Î»ÖÃ¼Ó1		
+	}	
+	if (USART_GetFlagStatus(USART1, USART_FLAG_ORE) != RESET)//¹ýÔØ´¦Àí£¬Ö»Òª¶Á×´Ì¬¼Ä´æÆ÷ºÍÊý¾Ý¼Ä´æÆ÷¾Í¿É×Ô¶¯ÇåÀí´Ë±êÖ¾
+	{
+		(void)USART_ReceiveData(USART1);
+	}
 
-int ferror(FILE *f) {  
-    /* Your implementation of ferror */  
-    return EOF;  
 } 
-#endif 
+#endif
 
-FILE __stdin;
-
-///ÖØ¶¨Ïòc¿âº¯Êýscanfµ½USART1
-int fgetc(FILE *fp)
+#ifdef USING_USART2
+void USART2_ISR(void)
 {
-		/* µÈ´ý´®¿Ú1ÊäÈëÊý¾Ý */
-		while (USART_GetFlagStatus(USART_printf, USART_FLAG_RXNE) == RESET);
-
-		return (int)USART_ReceiveData(USART_printf);
+	if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)  //ÅÐ¶ÏÊÇ·ñÊÇÖÐ¶Ï
+	{	
+		USART2_ReceiveTimeCounter = USART2_RECEIVE_OVERTIME;
+		
+		if(USART2_receive_index >= USART2_BUF_SIZE)	//Èô½ÓÊÕÎ»ÖÃÔ½½ç£¬ÄÇÃ´ÖØÍ·¿ªÊ¼´æ·Å
+			USART2_receive_index = 0;
+		
+		USART2_receive_buf[USART2_receive_index++] = (uint8_t)USART_ReceiveData(USART2);//½ÓÊÕ×Ö·û£¬²¢Î»ÖÃ¼Ó1
+		
+	}		
+	if (USART_GetFlagStatus(USART2, USART_FLAG_ORE) != RESET)//¹ýÔØ´¦Àí£¬Ö»Òª¶Á×´Ì¬¼Ä´æÆ÷ºÍÊý¾Ý¼Ä´æÆ÷¾Í¿É×Ô¶¯ÇåÀí´Ë±êÖ¾
+	{
+		(void)USART_ReceiveData(USART2);
+	}
 }
-/******************************************************************************************************************/
+#endif
+
+#ifdef USING_USART3
+void USART3_ISR(void)
+{
+	if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
+	{
+		USART3_ReceiveTimeCounter = USART3_RECEIVE_OVERTIME;
+		if(USART3_receive_index >= USART3_BUF_SIZE)
+			USART3_receive_index = 0;
+		
+		USART3_receive_buf[USART3_receive_index++] = (uint8_t)USART_ReceiveData(USART3);
+		
+	}
+		
+	if (USART_GetFlagStatus(USART3, USART_FLAG_ORE) != RESET)
+	{
+		(void)USART_ReceiveData(USART3);
+	}
+}
+#endif
+
+#ifdef USING_UART4
+void UART4_ISR(void)
+{
+	if (USART_GetITStatus(UART4, USART_IT_RXNE) != RESET)
+	{
+		UART4_ReceiveTimeCounter = UART4_RECEIVE_OVERTIME;
+		if(UART4_receive_index >= UART4_BUF_SIZE)
+			UART4_receive_index = 0;
+		
+		UART4_receive_buf[UART4_receive_index++] = (uint8_t)USART_ReceiveData(UART4);
+		
+	}
+		
+	if (USART_GetFlagStatus(UART4, USART_FLAG_ORE) != RESET)
+	{
+		(void)USART_ReceiveData(UART4);
+	}
+}
+#endif
+
+#ifdef USING_UART5
+void UART5_ISR(void)
+{
+	if (USART_GetITStatus(UART5, USART_IT_RXNE) != RESET)
+	{		
+		UART5_ReceiveTimeCounter = UART5_RECEIVE_OVERTIME;
+		if(UART5_receive_index >= UART5_BUF_SIZE)
+			UART5_receive_index = 0;
+		
+		UART5_receive_buf[UART5_receive_index++] = (uint8_t)USART_ReceiveData(UART5);
+		
+	}
+		
+	if (USART_GetFlagStatus(UART5, USART_FLAG_ORE) != RESET)
+	{
+		(void)USART_ReceiveData(UART5);
+	}
+}
+#endif
+
+/****************************************************************************************************************************************/
 
 //ÅÐ¶Ï´®¿ÚÊÇ·ñ½ÓÊÕÍê±Ï
 //½ÓÊÕ³É¹¦·µ»Ø UART_OK
@@ -819,6 +548,159 @@ void Clean_USART_ready_buf(USART_TypeDef * usart)
 
 }
 
+/****************************************************************************************************************************************/
+
+static void USART_RCC_PeriphClockCmd(USART_TypeDef * USARTx)
+{
+	#if defined(STM32F10X_LD)||defined(STM32F10X_LD_VL)||defined(STM32F10X_MD)||defined(STM32F10X_MD_VL)||defined(STM32F10X_HD)||defined(STM32F10X_HD_VL)||defined(STM32F10X_XL)||defined(STM32F10X_CL)		
+	if		(USARTx==USART1) {	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);}
+	else if	(USARTx==USART2) {	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);}
+	#endif
+	
+	#if defined(STM32F10X_MD)||defined(STM32F10X_MD_VL)||defined(STM32F10X_HD)||defined(STM32F10X_HD_VL)||defined(STM32F10X_XL)||defined(STM32F10X_CL)					
+	else if	(USARTx==USART3) {	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);}
+	#endif
+	
+	#if defined(STM32F10X_HD)||defined(STM32F10X_HD_VL)||defined(STM32F10X_XL)||defined(STM32F10X_CL)
+	else if	(USARTx==UART4) {RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);}
+	else if	(USARTx==UART5) {RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART5, ENABLE);}
+	#endif
+
+}
+
+static uint8_t Get_NVIC_IRQChannel_USART(USART_TypeDef * USARTx)
+{
+	#if defined(STM32F10X_LD)||defined(STM32F10X_LD_VL)||defined(STM32F10X_MD)||defined(STM32F10X_MD_VL)||defined(STM32F10X_HD)||defined(STM32F10X_HD_VL)||defined(STM32F10X_XL)||defined(STM32F10X_CL)		
+	if		(USARTx==USART1) {return USART1_IRQn;}
+	else if	(USARTx==USART2) {return USART2_IRQn;}
+	#endif
+	
+	#if defined(STM32F10X_MD)||defined(STM32F10X_MD_VL)||defined(STM32F10X_HD)||defined(STM32F10X_HD_VL)||defined(STM32F10X_XL)||defined(STM32F10X_CL)					
+	else if	(USARTx==USART3) {return USART3_IRQn;}
+	#endif
+	
+	#if defined(STM32F10X_HD)||defined(STM32F10X_HD_VL)||defined(STM32F10X_XL)||defined(STM32F10X_CL)
+	else if	(USARTx==UART4) {return UART4_IRQn;}
+	else if	(USARTx==UART5) {return UART5_IRQn;}
+	#endif
+	
+	return 0;
+}
+
+static void USART_GPIO_PinRemapConfig	(	USART_TypeDef * USARTx,				
+											GPIO_TypeDef* USART_TX_GPIOx,	
+											u16 USART_TX_PIN,
+											GPIO_TypeDef* USART_RX_GPIOx,
+											u16 USART_RX_PIN
+										)	//¸´ÓÃ¹¦ÄÜÓ³Éä
+{
+		if(USARTx==USART1)
+		{
+			if(USART_TX_GPIOx==GPIOB && USART_TX_PIN==GPIO_Pin_6 && USART_TX_GPIOx==GPIOB && USART_TX_PIN==GPIO_Pin_7)
+			{
+				GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);//USART1 ¸´ÓÃ¹¦ÄÜÓ³Éä
+			}
+		}
+		if(USARTx==USART2)
+		{
+			if(USART_TX_GPIOx==GPIOD && USART_TX_PIN==GPIO_Pin_5 && USART_TX_GPIOx==GPIOD && USART_TX_PIN==GPIO_Pin_6)
+			{
+				GPIO_PinRemapConfig(GPIO_Remap_USART2, ENABLE);//USART2 ¸´ÓÃ¹¦ÄÜÓ³Éä
+			}
+		}
+		if(USARTx==USART3)
+		{
+			if(USART_TX_GPIOx==GPIOC && USART_TX_PIN==GPIO_Pin_10 && USART_TX_GPIOx==GPIOC && USART_TX_PIN==GPIO_Pin_11)
+			{
+				GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);//USART3 ¸´ÓÃ¹¦ÄÜ²¿·ÖÓ³Éä1
+			}
+			if(USART_TX_GPIOx==GPIOD && USART_TX_PIN==GPIO_Pin_8 && USART_TX_GPIOx==GPIOD && USART_TX_PIN==GPIO_Pin_9)
+			{
+				GPIO_PinRemapConfig(GPIO_FullRemap_USART3, ENABLE);//USART3 ¸´ÓÃ¹¦ÄÜ²¿·ÖÓ³Éä2
+			}			
+		}
+		
+}
+
+//´®¿Ú³õÊ¼»¯º¯Êý
+void USART_init	(	USART_TypeDef * USARTx,			
+					GPIO_TypeDef* USART_TX_GPIOx,	
+					u16 USART_TX_PIN,
+					GPIO_TypeDef* USART_RX_GPIOx,
+					u16 USART_RX_PIN,
+					uint32_t USART_BaudRate,			//²¨ÌØÂÊÉèÖÃ
+					uint16_t USART_WordLength,			//×Ö³¤(Êý¾ÝÎ»+Ð£ÑéÎ»)
+					uint16_t USART_StopBits,			//Í£Ö¹Î»		
+					uint16_t USART_Parity,				//Ð£ÑéÎ»Ñ¡Ôñ
+					uint16_t USART_Mode,				//USARTÄ£Ê½¿ØÖÆ
+					uint16_t USART_HardwareFlowControl,	//Ó²¼þÁ÷¿ØÖÆ
+					uint8_t PreemptionPriority,			//ÇÀÕ¼ÓÅÏÈ¼¶
+					uint8_t SubPriority					//×ÓÓÅÏÈ¼¶
+				)
+{
+
+	USART_InitTypeDef USART_InitStructure;
+	uint8_t NVIC_IRQChannel_USART;
+	
+	USART_RCC_PeriphClockCmd(USARTx);	/* Ê¹ÄÜ USART Ê±ÖÓ */
+	
+	GPIO_Common_Init(USART_TX_GPIOx,USART_TX_PIN,GPIO_Mode_AF_PP,GPIO_Speed_50MHz);	//GPIO³õÊ¼»¯
+	GPIO_Common_Init(USART_RX_GPIOx,USART_RX_PIN,GPIO_Mode_IN_FLOATING,GPIO_Speed_50MHz);	//GPIO³õÊ¼»¯
+
+	USART_GPIO_PinRemapConfig(USARTx,USART_TX_GPIOx,USART_TX_PIN,USART_RX_GPIOx,USART_RX_PIN);	//¸´ÓÃ¹¦ÄÜÓ³Éä
+	
+	USART_InitStructure.USART_BaudRate = USART_BaudRate;/* ²¨ÌØÂÊÉèÖÃ£º*/	
+	USART_InitStructure.USART_WordLength = USART_WordLength;/* ×Ö³¤(Êý¾ÝÎ»+Ð£ÑéÎ»)£º8 USART_WordLength_8b*/
+	USART_InitStructure.USART_StopBits = USART_StopBits;	/* Í£Ö¹Î»£º1¸öÍ£Ö¹Î» USART_StopBits_1*/
+	USART_InitStructure.USART_Parity = USART_Parity;	/* Ð£ÑéÎ»Ñ¡Ôñ£º²»Ê¹ÓÃÐ£Ñé USART_Parity_No*/
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl	/* Ó²¼þÁ÷¿ØÖÆ£º²»Ê¹ÓÃÓ²¼þÁ÷ USART_HardwareFlowControl_None*/;
+	USART_InitStructure.USART_Mode = USART_Mode;	/* USARTÄ£Ê½¿ØÖÆ£ºÍ¬Ê±Ê¹ÄÜ½ÓÊÕºÍ·¢ËÍ USART_Mode_Rx | USART_Mode_Tx*/
+	USART_Init(USARTx, &USART_InitStructure); 	/* Íê³ÉUSART³õÊ¼»¯ÅäÖÃ */	
+	
+	NVIC_IRQChannel_USART=Get_NVIC_IRQChannel_USART(USARTx);
+	NVIC_Init_IRQChannel(NVIC_IRQChannel_USART,PreemptionPriority,SubPriority,ENABLE);//ÅäÖÃ NVIC	
+	
+	USART_ITConfig(USARTx, USART_IT_RXNE, ENABLE);	/* Ê¹ÄÜ´®¿Ú½ÓÊÕÖÐ¶Ï */
+
+	USART_Cmd(USARTx, ENABLE);	/* Ê¹ÄÜ´®¿Ú */	
+}
+
+/******************************************************************************************************************/
+
+void Change_printf(USART_TypeDef* USART_prt)//ÖØ¶¨Ïò´®¿ÚÑ¡Ôñ
+{
+	USART_printf=USART_prt;
+}
+
+//·¢ËÍÒ»¸ö×Ö½Ú
+void USART_SendByte(USART_TypeDef* USARTx,uint8_t SendByte)	//·¢ËÍÒ»¸ö×Ö½Ú
+{
+
+    	USARTx->DR = (SendByte & (uint16_t)0x01FF);
+  		/* Loop until the end of transmission */
+		while (USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET);
+}
+//·¢ËÍÒ»´®Êý¾Ý
+void USART_SendChars(USART_TypeDef* USARTx,const uint8_t* SendChars,uint16_t len)	//·¢ËÍÒ»´®Êý¾Ý
+{
+	uint16_t i = 0;
+	for(i = 0; i < len; i++)
+	{
+    	USARTx->DR = (*(SendChars + i) & (uint16_t)0x01FF);
+		while (USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET);
+	}
+}
+
+//USART·¢ËÍ×Ö·û´®
+void UART_SendString(USART_TypeDef* USARTx,char* s)
+{
+	while(*s)//¼ì²â×Ö·û´®½áÊø·û
+	{
+		while(USART_GetFlagStatus(USARTx, USART_FLAG_TC)==RESET); 
+		USART_SendData(USARTx ,*s++);//·¢ËÍµ±Ç°×Ö·û
+	}
+}
+/******************************************************************************************************************/
 
 /*
   * log:

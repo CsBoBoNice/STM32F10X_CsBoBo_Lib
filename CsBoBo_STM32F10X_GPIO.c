@@ -23,15 +23,17 @@
 */
 /*************************************************************************/
 /*
-（默认速度50M，推挽输出）
-//参数1：GPIO编号（范围：1,2,3,4,5,6,7）
-										1 代表 GPIOA
-										2 代表 GPIOB
-										3 代表 GPIOC
-										4 代表 GPIOD
-										5 代表 GPIOE
-										6 代表 GPIOF
-										7 代表 GPIOG
+//参数1：GPIO_TypeDef
+					GPIOA
+					GPIOB
+					GPIOC
+					GPIOD
+					GPIOF
+					GPIOG
+					GPIOH
+					GPIOI
+					GPIOJ
+					GPIOK
 //参数2：对应引脚	
 					GPIO_Pin_0
 					GPIO_Pin_1
@@ -59,7 +61,10 @@
 					GPIO_Mode_Out_PP 		推挽输出		驱动小灯
 					GPIO_Mode_AF_OD 		复用开漏输出
 					GPIO_Mode_AF_PP 		复用推挽输出	PWM
-
+//参数3：GPIO速度
+					GPIO_Speed_10MHz
+					GPIO_Speed_2MHz
+					GPIO_Speed_50MHz
 */
 /********************************************************************/
 
@@ -79,54 +84,37 @@ JNTRST 			输入 JTAG模块复位  ——  	——					PB4
 GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable , ENABLE);	
 */
 
-void RCC_APB2PeriphClockCmd_init(u8 GPIOx)
-{
-	switch(GPIOx)
-	{
-		case 1:RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);return;
-		case 2:RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);return;
-		case 3:RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);return;
-		case 4:RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD,ENABLE);return;
-		case 5:RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE,ENABLE);return;
-		case 6:RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF,ENABLE);return;
-		case 7:RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG,ENABLE);return;
-	}
-	return;
-}
 
-void init_gpio_struct(GPIO_InitTypeDef *GPIO_InitStructure,u16 gpio_pin,GPIOSpeed_TypeDef Speed,GPIOMode_TypeDef GPIO_Mode)
+uint32_t Get_GPIO_PeriphClockCmd(GPIO_TypeDef* GPIOx)
 {
-	GPIO_InitStructure->GPIO_Pin = gpio_pin; 
-	GPIO_InitStructure->GPIO_Speed =Speed; 
-	GPIO_InitStructure->GPIO_Mode = GPIO_Mode ; 
-}
-
-
-u8 get_GPIO_num(GPIO_TypeDef* GPIOx)
-{
-	if(GPIOx==GPIOA){return 1;}
-	else if(GPIOx==GPIOB){return 2;}
-	else if(GPIOx==GPIOC){return 3;}
-	else if(GPIOx==GPIOD){return 4;}
-	else if(GPIOx==GPIOE){return 5;}
-	else if(GPIOx==GPIOF){return 6;}
-	else if(GPIOx==GPIOG){return 7;}
+	if		(GPIOx==GPIOA){return RCC_APB2Periph_GPIOA;}
+	else if	(GPIOx==GPIOB){return RCC_APB2Periph_GPIOB;}
+	else if	(GPIOx==GPIOC){return RCC_APB2Periph_GPIOC;}
+	else if	(GPIOx==GPIOD){return RCC_APB2Periph_GPIOD;}
+	else if	(GPIOx==GPIOE){return RCC_APB2Periph_GPIOE;}
+	else if	(GPIOx==GPIOF){return RCC_APB2Periph_GPIOF;}
+	else if	(GPIOx==GPIOG){return RCC_APB2Periph_GPIOG;}
 	return 0;
 }
 
-//GPIO初始化 （默认速度50M，推挽输出）
-//参数1：GPIO编号（范围：1,2,3,4,5,6,7）
-//参数2：对应引脚
-void GPIO_Common_Init(GPIO_TypeDef* GPIOx,u16 gpio_pin,GPIOMode_TypeDef GPIO_Mode)
+void GPIO_Common_Init(GPIO_TypeDef* GPIOx,u16 GPIO_PIN,GPIOMode_TypeDef GPIO_Mode,GPIOSpeed_TypeDef GPIO_Speed)
 {
-	u8 GPIO_num;
-	GPIO_InitTypeDef GPIO_InitStructure; 
-	GPIO_num=get_GPIO_num(GPIOx);
-	RCC_APB2PeriphClockCmd_init(GPIO_num);
-	init_gpio_struct(&GPIO_InitStructure,gpio_pin,GPIO_Speed_50MHz,(GPIOMode_TypeDef)GPIO_Mode);
-	GPIO_Init(GPIOx, &GPIO_InitStructure); 
-}
+	
+	GPIO_InitTypeDef GPIO_InitStructure;	//定义一个GPIO_InitTypeDef类型的结构体
+	
+	uint32_t GPIO_PeriphClockCmd;
+	GPIO_PeriphClockCmd=Get_GPIO_PeriphClockCmd(GPIOx);
+	
+	RCC_APB2PeriphClockCmd( GPIO_PeriphClockCmd, ENABLE);	//开启相关的GPIO外设时钟
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_PIN;	//选择要控制的GPIO引脚	
+	
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode; //设置引脚模式
 
+ 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed;	//设置引脚速率
+
+	GPIO_Init(GPIOx, &GPIO_InitStructure);	//调用库函数，初始化GPIO
+}
 
 /*
   * log:

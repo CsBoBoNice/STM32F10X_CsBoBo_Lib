@@ -8,7 +8,7 @@
 		
 #define USART_PERIOD_MS	1	//串口使用的定时器进入中断的时间单位MS
 
-//#define USING_USART1	//不适用可注释,节省RAM
+#define USING_USART1	//不适用可注释,节省RAM
 //#define USING_USART2
 //#define USING_USART3
 //#define USING_UART4
@@ -29,6 +29,7 @@ void USART1_ISR(void);
 #ifdef USING_USART2
 #define USART2_BUF_SIZE				256	//接收一、二级缓冲区大小	
 #define USART2_RECEIVE_OVERTIME		200		//字节超时时间, 单位为ms
+
 extern uint8_t USART2_ready_buf[];
 extern __IO uint8_t USART2_ready_buf_ok;
 extern __IO uint16_t USART2_ready_buf_len;
@@ -73,13 +74,21 @@ void UART5_ISR(void);
 
 /******************************API************************************************/
 
-void USART_init(u8 USARTx,u32 BaudRate,uint8_t PreemptionPriority,uint8_t SubPriority,u8 remap_usart);//串口初始化
-
-void USART1_ISR(void); //串口中断函数
-void USART2_ISR(void); //串口中断函数
-void USART3_ISR(void); //串口中断函数
-void USART4_ISR(void); //串口中断函数
-void USART5_ISR(void); //串口中断函数
+//串口初始化函数
+void USART_init	(	USART_TypeDef * USARTx,			
+					GPIO_TypeDef* USART_TX_GPIOx,	
+					u16 USART_TX_PIN,
+					GPIO_TypeDef* USART_RX_GPIOx,
+					u16 USART_RX_PIN,
+					uint32_t USART_BaudRate,			//波特率设置
+					uint16_t USART_WordLength,			//字长(数据位+校验位)
+					uint16_t USART_StopBits,			//停止位		
+					uint16_t USART_Parity,				//校验位选择
+					uint16_t USART_Mode,				//USART模式控制
+					uint16_t USART_HardwareFlowControl,	//硬件流控制
+					uint8_t PreemptionPriority,			//抢占优先级
+					uint8_t SubPriority					//子优先级
+				);//串口初始化
 
 void Change_printf(USART_TypeDef* USART_prt);//重定向串口选择
 void USART_SendByte(USART_TypeDef* USARTx,uint8_t SendByte);	//发送一个字节

@@ -3,7 +3,7 @@
 
 #include "stm32f10x.h"
 
-void GPIO_Common_Init(GPIO_TypeDef* GPIOx,u16 gpio_pin,GPIOMode_TypeDef GPIO_Mode);
+void GPIO_Common_Init(GPIO_TypeDef* GPIOx,u16 GPIO_PIN,GPIOMode_TypeDef GPIO_Mode,GPIOSpeed_TypeDef GPIO_Speed);
 
 
 //位带操作,实现51类似的GPIO控制功能
