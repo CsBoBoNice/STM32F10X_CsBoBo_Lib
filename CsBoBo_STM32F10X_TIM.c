@@ -84,19 +84,19 @@ void TIM5_IRQHandler(void)
 }
 #endif
 
-#if STM32F10X_HD||STM32F10X_XL||STM32F10X_CL
-void TIM6_IRQHander(void)
-{
+//#if STM32F10X_HD||STM32F10X_XL||STM32F10X_CL
+//void TIM6_IRQHander(void)
+//{
 
-}
-#endif
+//}
+//#endif
 
-#if STM32F10X_LD_VL||STM32F10X_MD_VL||STM32F10X_HD||STM32F10X_HD_VL||STM32F10X_XL||STM32F10X_CL			
-void TIM7_IRQHander(void)
-{
-    TIM_ClearITPendingBit(TIM7,TIM_IT_Update);/* 清除溢出中断标志 */
-}
-#endif
+//#if STM32F10X_LD_VL||STM32F10X_MD_VL||STM32F10X_HD||STM32F10X_HD_VL||STM32F10X_XL||STM32F10X_CL			
+//void TIM7_IRQHander(void)
+//{
+//    TIM_ClearITPendingBit(TIM7,TIM_IT_Update);/* 清除溢出中断标志 */
+//}
+//#endif
 
 /********************************************************************************/
 

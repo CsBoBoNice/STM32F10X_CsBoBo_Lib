@@ -15,6 +15,7 @@
 #include "CsBoBo_STM32F10X_IWDG.h"
 #include "CsBoBo_STM32F10X_systick.h"
 #include "CsBoBo_STM32F10X_NVIC.h"
+#include "CsBoBo_STM32F10X_Basic_TIM.h"
 
 #define OK 1
 #define ERROR 0

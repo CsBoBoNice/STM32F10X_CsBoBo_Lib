@@ -1,5 +1,5 @@
 #include "CsBoBo_STM32F10X_adc.h"
-#include "CsBoBo_STM32F10X_delay.h"
+#include "CsBoBo_STM32F10X_LIB.h"
 
 /*********使用方法***********************************************************************************/
 /*
